@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -51,8 +52,9 @@ public class JobData {
         loadData();
 
         // Bonus mission; normal version returns allJobs
+//        return new ArrayList<>(allJobs);
         ArrayList<HashMap<String, String>> cloneAllJobs = (ArrayList) allJobs.clone();
-        return new ArrayList<>(allJobs);
+        return new ArrayList<>(cloneAllJobs);
     }
 
     /**
@@ -70,14 +72,14 @@ public class JobData {
 
         // load data, if not already loaded
         loadData();
-        value = value.toLowerCase();
+
         ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
 
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column).toLowerCase();
-
-            if (aValue.contains(value)) {
+            String aValue = row.get(column);
+            // add case sensitivity to search and returned matches
+            if (aValue.toLowerCase().contains(value.toLowerCase())) {
                 jobs.add(row);
             }
         }
@@ -98,11 +100,11 @@ public class JobData {
 
         // create a new ArrayList
         ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
-
+        //loop through allJobs
         for (HashMap<String, String> job : allJobs) {
-
+            //loop through allJobs values
             for(String jobValue : job.values()) {
-
+                //add case sensitivity to searches and returned matches
                 if ( jobValue.toLowerCase().contains(value.toLowerCase())) {
                     jobs.add(job);
                 }
@@ -110,9 +112,11 @@ public class JobData {
             }
         }
 
+        // TODO - implement this method
+//        return null;
+//        Todo - implemented method
         return jobs;
     }
-
 
     /**
      * Read in data from a CSV file and store it in a list
@@ -130,7 +134,7 @@ public class JobData {
             Reader in = new FileReader(DATA_FILE);
             CSVParser parser = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
             List<CSVRecord> records = parser.getRecords();
-            Integer numberOfColumns = records.get(0).size();
+            int numberOfColumns = records.get(0).size();
             String[] headers = parser.getHeaderMap().keySet().toArray(new String[numberOfColumns]);
 
             allJobs = new ArrayList<>();
